@@ -160,9 +160,13 @@ rlog.cmd where
 
 ### 方式一：下载 Release
 
-1. 从 Releases 下载最新的 `ResearchLog-<version>-win64.zip`；
+1. 从 [Releases](https://github.com/Harmonicoscillator101/research-log/releases/latest) 下载最新的 `ResearchLog-<version>-win64.zip`；
 2. 解压到任意目录（路径尽量不要含特殊字符）；
 3. 双击 `科研日志.exe`，或运行 `run.cmd`。
+
+> **未签名提示**：`科研日志.exe` 和 `添加资料.exe` 没有做代码签名，Windows SmartScreen / Defender 可能显示“Windows 已保护你的电脑”或“未知发布者”。这是未签名程序的常见提示，不代表检测到恶意代码。可以点“更多信息（More info）→ 仍要运行（Run anyway）”，或先用 SHA-256 校验下载文件（校验值见 Release 页面），也可以从源码运行 `run.cmd`。请不要为了运行程序而关闭系统 Defender。
+>
+> 校验命令：`Get-FileHash .\ResearchLog-0.1.0-win64.zip -Algorithm SHA256`
 
 ### 方式二：从源码运行
 

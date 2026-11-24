@@ -154,9 +154,13 @@ rlog.cmd where
 
 ### Option 1: Download a Release
 
-1. Download the latest `ResearchLog-<version>-win64.zip` from Releases;
+1. Download the latest `ResearchLog-<version>-win64.zip` from [Releases](https://github.com/Harmonicoscillator101/research-log/releases/latest);
 2. Extract it to any directory (avoid special characters in the path);
 3. Double-click `科研日志.exe`, or run `run.cmd`.
+
+> **Unsigned build warning**: `科研日志.exe` and `添加资料.exe` are not code-signed. Windows SmartScreen / Defender may show “Windows protected your PC” or “Unknown publisher”. This is a common warning for unsigned builds and does not mean malware was detected. Choose **More info → Run anyway**, verify the SHA-256 checksum published on the Release page, or run from source with `run.cmd`. Do not disable Windows Defender just to run the app.
+>
+> Verify with: `Get-FileHash .\ResearchLog-0.1.0-win64.zip -Algorithm SHA256`
 
 ### Option 2: Run from source
 
