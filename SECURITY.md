@@ -1,37 +1,39 @@
-# 安全策略
+# Security Policy
 
-## 支持范围
+[English](SECURITY.md) | [简体中文](SECURITY.zh-CN.md)
 
-当前维护 `main` 分支的最新版本。旧版本不保证安全更新。
+## Supported versions
 
-## 报告漏洞
+The latest version on the `main` branch is supported. Older versions do not receive security updates.
 
-请**不要**通过公开 Issue 报告安全问题。发送邮件到 wzykyle101@foxmail.com，包含：
+## Reporting a vulnerability
 
-- 影响版本 / 操作系统；
-- 复现步骤或最小示例；
-- 影响范围（数据泄露、任意文件读取、代码执行等）；
-- 你希望的署名方式（可选）。
+Please **do not** open a public issue for security problems. Email **wzykyle101@foxmail.com** with:
 
-我们会在 72 小时内确认收到，并在修复后致谢（除非你希望匿名）。
+- affected version / operating system;
+- reproduction steps or a minimal example;
+- impact (data disclosure, arbitrary file read, code execution, etc.);
+- how you would like to be credited (optional).
 
-## 安全设计
+We will acknowledge receipt within 72 hours and credit you after the fix, unless you prefer to stay anonymous.
 
-科研日志是**单机、本地优先**的工具，理解以下边界有助于判断问题是否属于漏洞：
+## Security design
 
-- HTTP 引擎只监听 `127.0.0.1`，默认端口 `47823`；
-- 没有账号、云端、遥测，也不向上游发送数据；
-- MCP 通过 **stdio** 在本地进程间通信，不开放网络端口；
-- 资源只保存路径，打开前会校验路径确实来自当前数据文件；
-- 笔记阅读器只允许读取数据中登记过的文本文件（`.md` / `.markdown` / `.txt` / `.tex` / `.bib`），有大小上限；
-- `data/` 是用户数据，不应提交到公开仓库。
+ResearchLog is a **single-machine, local-first** tool. These boundaries help decide whether something is a vulnerability:
 
-## 已知边界（非漏洞）
+- The HTTP engine binds to `127.0.0.1` only; the default port is `47823`;
+- No accounts, no cloud, no telemetry, and no data sent upstream;
+- MCP communicates over **stdio** between local processes and opens no network port;
+- Resources store paths only; before opening, the server verifies the path belongs to the current data file;
+- The note reader only opens text files registered in the data file (`.md` / `.markdown` / `.txt` / `.tex` / `.bib`) and enforces a size limit;
+- `data/` contains user data and must never be committed to a public repository.
 
-- 能访问本机同一用户账户的进程，可以读写 `data/`，这与普通桌面应用一致；
-- 用户主动挂载的路径会以当前用户权限打开，这是预期行为；
-- 若将 `config.json` 的 `dataDir` 指向共享目录，需要自行保证访问控制。
+## Known boundaries (not vulnerabilities)
 
-## 依赖
+- Any process running as the same local user can read and write `data/`, as with any desktop app;
+- Paths explicitly attached by the user are opened with the current user's permissions — that is intended;
+- If `config.json` points `dataDir` at a shared folder, access control is the user's responsibility.
 
-运行时只依赖 Python 标准库和系统浏览器，第三方依赖面很小。发布包中若包含 Python 运行时，请同时保留其许可证（见 `THIRD_PARTY_NOTICES.md`）。
+## Dependencies
+
+The runtime depends only on the Python standard library and the system browser, so the third-party surface is small. If a release bundles the Python runtime, keep its license (see `THIRD_PARTY_NOTICES.md`).

@@ -1,38 +1,38 @@
-name: 功能建议
-description: 提出一个新功能或改进
+name: Feature request
+description: Suggest a new feature or improvement
 title: "[Feature] "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        请先描述使用场景，而不是直接给实现方案；这样更容易判断是否适合本项目。
+        Please describe the use case first rather than jumping to an implementation; that makes it easier to judge whether it fits the project.
   - type: textarea
     id: scenario
     attributes:
-      label: 使用场景
-      description: 你现在是怎么做的？哪一步最麻烦？
+      label: Use case
+      description: How do you do this today? Which step is the most painful?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: 期望的方案
-      description: 你希望它怎么工作？
+      label: Proposed solution
+      description: How would you like it to work?
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: 考虑过的替代方案
+      label: Alternatives considered
     validations:
       required: false
   - type: checkboxes
     id: scope
     attributes:
-      label: 范围确认
+      label: Scope
       options:
-        - label: 这个功能可以完全离线、本地运行
+        - label: This feature can run fully offline and locally
           required: false
-        - label: 不引入云端账号或遥测
+        - label: It does not require a cloud account or telemetry
           required: false

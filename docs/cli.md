@@ -1,5 +1,7 @@
 # 命令行（CLI）
 
+[English](en/cli.md) | 简体中文
+
 `rlog.cmd` 是与 GUI、MCP 共用同一份数据的命令行入口，适合批处理、脚本和 Agent。
 
 ```bat

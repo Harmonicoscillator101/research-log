@@ -1,12 +1,14 @@
-# 贡献指南
+# Contributing to ResearchLog
 
-感谢你愿意参与科研日志。这个项目优先保证三件事：**数据安全、离线可用、Agent 可读写**。任何改动都不要破坏它们。
+[English](CONTRIBUTING.md) | [简体中文](CONTRIBUTING.zh-CN.md)
 
-## 开发环境
+Thanks for your interest in ResearchLog. This project cares about three things above all: **data safety, offline availability, and agent-readable data**. Please keep them intact in every change.
+
+## Development environment
 
 - Windows 10 / 11
 - Python 3.12+
-- 任意现代浏览器（Edge / Chrome）
+- Any modern browser (Edge / Chrome)
 
 ```bat
 git clone https://github.com/Harmonicoscillator101/research-log.git
@@ -15,65 +17,67 @@ python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-运行时零第三方依赖；`requirements-dev.txt` 只包含测试和 lint 工具。
+The runtime has **zero third-party dependencies**; `requirements-dev.txt` only contains test and lint tools.
 
-## 本地运行
+## Run locally
 
 ```bat
-:: 启动引擎 + 桌面窗口
+:: Start the engine and the desktop window
 python launch.py
 
-:: 只启动引擎，浏览器访问 http://127.0.0.1:47823/
+:: Start the engine only, then open http://127.0.0.1:47823/ in a browser
 python app\server.py
 ```
 
-测试时请使用独立的临时数据目录，**不要动 `data/`**：
+Always use a temporary data directory for tests. **Do not touch `data/`**:
 
 ```bat
-python tools\rlog.py --data .tmp-test\data add-project "测试项目"
+python tools\rlog.py --data .tmp-test\data add-project "Test project"
 set RESEARCH_LOG_DATA=.tmp-test\data
 python app\server.py
 ```
 
-## 目录与职责
+## Project layout
 
-| 路径 | 职责 |
+| Path | Responsibility |
 |---|---|
-| `app/server.py` | 本地 HTTP 引擎、REST、SSE、静态资源、资源打开/读取 |
-| `app/web/` | 原生前端，无构建步骤 |
-| `app/web/markdown.js` | Markdown 渲染 + TeX→MathML |
-| `tools/rlog.py` | CLI 与 `Store`（原子写、备份、文件锁、rev） |
-| `tools/mcp_server.py` | MCP stdio 服务端，复用 `Store` |
-| `build/` | 两个原生小工具的 C# 源码（可选） |
+| `app/server.py` | Local HTTP engine, REST, SSE, static files, resource open/read |
+| `app/web/` | Vanilla frontend, no build step |
+| `app/web/markdown.js` | Markdown renderer + TeX→MathML |
+| `app/web/i18n.js` | Chinese/English UI layer (UI only; user data is never translated) |
+| `tools/rlog.py` | CLI and `Store` (atomic writes, backups, file lock, `rev`) |
+| `tools/mcp_server.py` | MCP stdio server, reuses `Store` |
+| `build/` | Optional C# sources for the two native helpers |
 
-修改 `Store` 的行为时，请同时检查 GUI、CLI、MCP 三条路径是否一致。
+When changing `Store` behavior, check all three entry points: GUI, CLI, and MCP.
 
-## 代码风格
+## Code style
 
-- Python：PEP 8，4 空格；`ruff check tools tests`；
-- JavaScript / CSS：2 空格，不加构建步骤，不引入前端框架；
-- 中文文案保持简洁，面向科研用户；
-- 文件编码 UTF-8，换行遵循 `.gitattributes`；
-- 不要提交 `data/`、`runtime/`、`*.exe` 等（见 `.gitignore`）。
+- Python: PEP 8, 4 spaces; `ruff check tools tests`;
+- JavaScript / CSS: 2 spaces, no build step, no frontend framework;
+- Keep UI copy concise and aimed at researchers;
+- UTF-8 everywhere; line endings follow `.gitattributes`;
+- Never commit `data/`, `runtime/`, `*.exe`, etc. (see `.gitignore`).
 
-## 提交与 PR
+## Commits and pull requests
 
-1. 从 `main` 开分支：`feat/...`、`fix/...`、`docs/...`；
-2. 提交信息用简短祈使句，例如 `feat: 支持拖拽排序`；
-3. PR 描述写清楚：改了什么、为什么、怎么验证；
-4. 涉及数据格式的改动必须更新 `docs/data-format.md`，并保证旧数据可读；
-5. 涉及 MCP 工具的改动必须更新 `docs/mcp.md` 和 README 的工具表。
+1. Branch from `main`: `feat/...`, `fix/...`, `docs/...`;
+2. Use short imperative commit messages, e.g. `feat: support drag-to-reorder`;
+3. PR description: what changed, why, and how you verified it;
+4. Changes to the data format must update both `docs/data-format.md` (Chinese) and `docs/en/data-format.md` (English), and stay backward compatible;
+5. Changes to MCP tools must update both `docs/mcp.md` and `docs/en/mcp.md`, plus the tool table in the README.
 
-## 测试
+## Tests
 
 ```bat
 python -m pytest
 node --check app\web\app.js
 node --check app\web\markdown.js
+node --check app\web\i18n.js
 ```
 
-测试只使用 `tmp_path` 或 `--data`，不得读写仓库外的真实数据。
+Tests must only use `tmp_path` or `--data`; never read or write real user data.
 
-## 许可证
+## License
 
-提交代码即表示你同意以 [MIT](LICENSE) 许可证发布你的贡献。
+By contributing, you agree that your contributions are released under the [MIT](LICENSE) license.

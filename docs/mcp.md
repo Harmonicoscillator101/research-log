@@ -1,5 +1,7 @@
 # MCP 接入
 
+[English](en/mcp.md) | 简体中文
+
 科研日志自带一个 [Model Context Protocol](https://modelcontextprotocol.io/) 服务端：`tools/mcp_server.py`。它把同一套 `Store` 暴露成 12 个工具，让 Codex、Claude Desktop、Cursor 等客户端直接读写你的科研日志。
 
 ## 工作方式

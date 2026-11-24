@@ -1,24 +1,24 @@
-name: Bug 报告
-description: 报告一个可复现的问题
+name: Bug report
+description: Report a reproducible problem
 title: "[Bug] "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        感谢反馈。请先确认使用的是最新版本，并搜索是否已有相似 Issue。
-        **不要粘贴真实科研数据或本机绝对路径**，可以用 `examples/demo-data` 复现。
+        Thanks for the report. Please make sure you are on the latest version and search for existing issues first.
+        **Do not paste real research data or local absolute paths** — reproduce with `examples/demo-data-en/`.
   - type: textarea
     id: what
     attributes:
-      label: 发生了什么
-      description: 实际行为与预期行为
+      label: What happened
+      description: Actual behavior and expected behavior
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: 复现步骤
+      label: Steps to reproduce
       placeholder: |
         1. ...
         2. ...
@@ -28,14 +28,14 @@ body:
   - type: input
     id: version
     attributes:
-      label: 版本 / 系统
+      label: Version / OS
       placeholder: "v0.1.0 / Windows 11 / Python 3.12"
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
-      label: 日志或截图
-      description: 可附控制台输出或截图；请先打码个人信息
+      label: Logs or screenshots
+      description: Console output or screenshots; redact personal information first
     validations:
       required: false

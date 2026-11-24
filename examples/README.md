@@ -1,5 +1,7 @@
 # 示例数据
 
+[English](README.en.md) | 简体中文
+
 - `demo-data/research-log.json`：虚构的科研日志，4 个项目，覆盖三种状态、若干小目标和进展；
 - `demo-data-en/research-log.json`：英文版示例数据，适合英文界面截图或国际用户；
 - 所有标题、备注、时间均为演示用途，不包含任何真实研究数据或本机路径。
