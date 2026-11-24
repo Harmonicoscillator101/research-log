@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "rev": 1,
+  "updatedAt": "2026-11-24T20:00:00+08:00",
+  "projects": [
+    {
+      "id": "pdemo001",
+      "title": "Sample: Protein folding model",
+      "field": "Biophysics",
+      "status": "active",
+      "goal": {
+        "text": "Build a reproducible simplified model of protein folding and submit a methods paper.",
+        "criteria": "The model reproduces two public datasets and the paper is submitted.",
+        "targetDate": "2027-06-30"
+      },
+      "milestones": [
+        { "id": "mdemo001", "text": "Reproduce the baseline case", "done": true, "doneAt": "2026-11-20T18:00:00+08:00", "due": "", "note": "Align the equilibrium state first, then add the perturbation.", "order": 0 },
+        { "id": "mdemo002", "text": "Add side-chain interactions", "done": false, "doneAt": null, "due": "2026-12-15", "note": "", "order": 1 },
+        { "id": "mdemo003", "text": "Compare with the literature", "done": false, "doneAt": null, "due": "", "note": "Check the order of magnitude first.", "order": 2 },
+        { "id": "mdemo004", "text": "Draft the methods section", "done": false, "doneAt": null, "due": "", "note": "", "order": 3 }
+      ],
+      "notes": "",
+      "createdAt": "2026-09-01T09:00:00+08:00",
+      "updatedAt": "2026-11-23T21:00:00+08:00",
+      "startDate": "2026-09-01",
+      "targetDate": "",
+      "completedAt": null,
+      "archived": false,
+      "order": 0,
+      "resources": []
+    },
+    {
+      "id": "pdemo002",
+      "title": "Sample: Microfluidic droplet diffusion",
+      "field": "Fluid dynamics",
+      "status": "active",
+      "goal": {
+        "text": "Build a microfluidic platform and measure droplet diffusion coefficients.",
+        "criteria": "Obtain one reproducible set of diffusion measurements.",
+        "targetDate": ""
+      },
+      "milestones": [
+        { "id": "mdemo011", "text": "Build the microfluidic platform", "done": true, "doneAt": "2026-11-10T17:30:00+08:00", "due": "", "note": "", "order": 0 },
+        { "id": "mdemo012", "text": "Write the image analysis script", "done": false, "doneAt": null, "due": "2026-12-05", "note": "Include peak finding and fitting.", "order": 1 },
+        { "id": "mdemo013", "text": "Measure diffusion coefficients", "done": false, "doneAt": null, "due": "", "note": "", "order": 2 }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-10T10:00:00+08:00",
+      "updatedAt": "2026-11-22T19:00:00+08:00",
+      "startDate": "2026-10-10",
+      "targetDate": "",
+      "completedAt": null,
+      "archived": false,
+      "order": -1,
+      "resources": []
+    },
+    {
+      "id": "pdemo003",
+      "title": "Sample: Review writing",
+      "field": "Review",
+      "status": "planned",
+      "goal": {
+        "text": "Survey the field and write an 8,000-word review.",
+        "criteria": "Submitted and accepted.",
+        "targetDate": ""
+      },
+      "milestones": [
+        { "id": "mdemo021", "text": "Outline the review", "done": false, "doneAt": null, "due": "", "note": "", "order": 0 },
+        { "id": "mdemo022", "text": "Read 20 core papers", "done": false, "doneAt": null, "due": "", "note": "", "order": 1 },
+        { "id": "mdemo023", "text": "Draft the manuscript", "done": false, "doneAt": null, "due": "", "note": "", "order": 2 }
+      ],
+      "notes": "",
+      "createdAt": "2026-11-01T09:00:00+08:00",
+      "updatedAt": "2026-11-01T09:00:00+08:00",
+      "startDate": "",
+      "targetDate": "",
+      "completedAt": null,
+      "archived": false,
+      "order": -2,
+      "resources": []
+    },
+    {
+      "id": "pdemo004",
+      "title": "Sample: Completed small project",
+      "field": "",
+      "status": "done",
+      "goal": {
+        "text": "Reproduce a public dataset and write a short report.",
+        "criteria": "Report submitted.",
+        "targetDate": ""
+      },
+      "milestones": [
+        { "id": "mdemo031", "text": "Download and clean the data", "done": true, "doneAt": "2026-10-05T15:00:00+08:00", "due": "", "note": "", "order": 0 },
+        { "id": "mdemo032", "text": "Reproduce the main results", "done": true, "doneAt": "2026-10-12T20:00:00+08:00", "due": "", "note": "", "order": 1 },
+        { "id": "mdemo033", "text": "Write the report", "done": true, "doneAt": "2026-10-18T18:00:00+08:00", "due": "", "note": "", "order": 2 }
+      ],
+      "notes": "",
+      "createdAt": "2026-09-20T09:00:00+08:00",
+      "updatedAt": "2026-10-18T18:00:00+08:00",
+      "startDate": "2026-09-20",
+      "targetDate": "",
+      "completedAt": "2026-10-18T18:00:00+08:00",
+      "archived": false,
+      "order": -3,
+      "resources": []
+    }
+  ],
+  "entries": [
+    { "id": "edemo001", "projectId": "pdemo001", "at": "2026-11-20T18:00:00+08:00", "kind": "auto", "text": "Completed baseline case" },
+    { "id": "edemo002", "projectId": "pdemo001", "at": "2026-11-20T18:05:00+08:00", "kind": "note", "text": "Checked the simplified model against the literature; baseline error 0.3%." },
+    { "id": "edemo003", "projectId": "pdemo002", "at": "2026-11-22T19:00:00+08:00", "kind": "note", "text": "Microfluidic platform built; next, the image analysis script." },
+    { "id": "edemo004", "projectId": "pdemo004", "at": "2026-10-18T18:00:00+08:00", "kind": "auto", "text": "Status changed to Done" },
+    { "id": "edemo005", "projectId": null, "at": "2026-11-24T20:00:00+08:00", "kind": "note", "text": "Sample data: edit or delete freely, or import your own backup." }
+  ]
+}

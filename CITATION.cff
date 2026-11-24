@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "如果本软件对你的研究有帮助，请按以下格式引用。"
+title: "科研日志（ResearchLog）：本地优先、AI 原生的科研项目与进展管理器"
+abstract: >-
+  一个面向科研工作者的本地项目管理与进展记录工具。支持项目大目标与小目标、
+  文献/项目库/笔记挂载、Markdown 与 LaTeX 公式阅读、周报回顾，并通过 MCP
+  让 Codex、Claude 等智能体读写同一份本地科研记忆。
+authors:
+  - family-names: "Wang"
+    given-names: "Ziyue"
+    affiliation: "School of Physics, Huazhong University of Science and Technology"
+version: 0.1.0
+date-released: 2026-11-24
+license: MIT
+repository-code: "https://github.com/Harmonicoscillator101/research-log"
+keywords:
+  - research management
+  - local-first
+  - MCP
+  - markdown
+  - LaTeX
+  - productivity
