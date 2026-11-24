@@ -22,6 +22,7 @@ def test_health_and_state(tmp_path: Path) -> None:
     env["RESEARCH_LOG_DATA"] = str(tmp_path / "data")
     env["RESEARCH_LOG_PORT"] = str(port)
     env["PYTHONUTF8"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
 
     process = subprocess.Popen(
         [sys.executable, str(ROOT / "app" / "server.py")],

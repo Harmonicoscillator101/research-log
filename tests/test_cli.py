@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -7,12 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def run_cli(data_dir: Path, *args: str) -> subprocess.CompletedProcess:
+    env = dict(os.environ)
+    env["PYTHONUTF8"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
     return subprocess.run(
         [sys.executable, str(ROOT / "tools" / "rlog.py"), "--data", str(data_dir), *args],
         capture_output=True,
         text=True,
         encoding="utf-8",
         errors="replace",
+        env=env,
         timeout=30,
     )
 

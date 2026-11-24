@@ -17,6 +17,15 @@ import sys
 import time
 from pathlib import Path
 
+# Windows 控制台/管道默认可能是 cp1252/cp936，中文输出会直接抛
+# UnicodeEncodeError；CLI 与 MCP 都强制 UTF-8。
+if os.name == "nt":
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "app"))
 

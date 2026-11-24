@@ -11,6 +11,7 @@ def test_mcp_initialize_and_tools(tmp_path: Path) -> None:
     env = dict(os.environ)
     env["RESEARCH_LOG_DATA"] = str(tmp_path / "data")
     env["PYTHONUTF8"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
 
     requests = [
         {
