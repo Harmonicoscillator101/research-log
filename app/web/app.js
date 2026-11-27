@@ -1180,7 +1180,12 @@
     }
   }
 
-  async function openResource(id) {
+  function resourceById(id) {
+    const project = S.selected ? getProject(S.selected) : null;
+    return project ? (project.resources || []).find((resource) => resource.id === id) || null : null;
+  }
+
+  async function openExternalResource(id) {
     if (!S.selected) return;
     try {
       const result = await postJson('/api/resources/open', { projectId: S.selected, resourceId: id });
@@ -1188,6 +1193,71 @@
     } catch (error) {
       toast('打不开：' + error.message);
     }
+  }
+
+  async function openFolder(id) {
+    if (!S.selected) return;
+    const fmtBytes = (value) => {
+      if (!value) return '0 B';
+      if (value < 1024) return value + ' B';
+      if (value < 1024 * 1024) return (value / 1024).toFixed(1) + ' KB';
+      return (value / 1024 / 1024).toFixed(1) + ' MB';
+    };
+    try {
+      const data = await postJson('/api/resources/list', { projectId: S.selected, resourceId: id });
+      const rows = (data.entries || []).map((entry) => `
+        <button type="button" class="folder-row" data-child="${esc(entry.path)}" title="${esc(entry.path)}">
+          ${icon(entry.kind === 'dir' ? 'folder' : 'file')}
+          <span class="folder-name">${esc(entry.name)}</span>
+          <span class="folder-meta">${entry.kind === 'dir' ? '文件夹' : fmtBytes(entry.size)}</span>
+        </button>`).join('');
+      const empty = '<div class="folder-empty">文件夹是空的。</div>';
+      const truncated = data.truncated ? '<div class="folder-more">只显示前 200 项。</div>' : '';
+      openModal(`
+        <div class="folder-head">
+          <div>
+            <h2>${esc(data.name)}</h2>
+            <p class="folder-path" title="${esc(data.path)}">${esc(data.path)}</p>
+          </div>
+          <button class="icon-btn" type="button" data-close aria-label="关闭">${icon('close')}</button>
+        </div>
+        <div class="folder-list">${rows || empty}${truncated}</div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-open-external>在资源管理器中打开</button>
+          <button class="btn btn-primary" type="button" data-close>关闭</button>
+        </div>`, {
+        onMount(root, done) {
+          root.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', done));
+          root.querySelector('[data-open-external]').addEventListener('click', () => {
+            openExternalResource(id);
+            done();
+          });
+          root.querySelectorAll('[data-child]').forEach((button) => button.addEventListener('click', async () => {
+            try {
+              const result = await postJson('/api/resources/open-child', {
+                projectId: S.selected,
+                resourceId: id,
+                path: button.dataset.child,
+              });
+              toast(result.kind === 'dir' ? '已打开文件夹' : '已用默认程序打开');
+            } catch (error) {
+              toast('打不开：' + error.message);
+            }
+          }));
+        },
+      });
+    } catch (error) {
+      toast('读不了文件夹：' + error.message);
+    }
+  }
+
+  async function openResource(id) {
+    if (!S.selected) return;
+    const resource = resourceById(id);
+    if (resource && (resource.kind === 'dir' || resource.category === 'repo')) {
+      return openFolder(id);
+    }
+    return openExternalResource(id);
   }
 
   async function removeResource(id) {

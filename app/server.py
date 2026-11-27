@@ -436,6 +436,43 @@ def _find_resource(doc, project_id, resource_id):
     return project, item
 
 
+def _open_local_path(path: Path) -> None:
+    if path.is_dir():
+        # ShellExecute on a directory can fail inside a packaged/sandboxed
+        # Python (WinError 5). Try a new Explorer window; the UI also offers
+        # an in-app folder listing as a fallback.
+        subprocess.Popen(["explorer.exe", "/n,", str(path)], close_fds=True)
+        return
+    try:
+        os.startfile(str(path))  # noqa: S606 - 用户明确添加过的本地路径
+    except OSError:
+        subprocess.Popen(["cmd.exe", "/c", "start", "", str(path)], close_fds=True)
+
+
+def _resource_dir(project_id, resource_id) -> Path:
+    _, doc = APP.store.snapshot()
+    _, item = _find_resource(doc, project_id, resource_id)
+    path = Path(str(item.get("path") or "")).expanduser()
+    try:
+        if not path.is_dir():
+            raise HttpError(400, "这个资料不是文件夹")
+        return path.resolve()
+    except OSError as exc:
+        raise HttpError(400, f"文件夹不可访问：{exc}")
+
+
+def _child_path(root: Path, raw) -> Path:
+    try:
+        child = Path(str(raw or "")).expanduser().resolve()
+    except OSError as exc:
+        raise HttpError(400, f"路径不可访问：{exc}")
+    if child != root and root not in child.parents:
+        raise HttpError(400, "路径不在这个文件夹内")
+    if not child.exists():
+        raise HttpError(404, "文件不存在，可能被移动或删除了")
+    return child
+
+
 def resource_open(project_id, resource_id):
     _, doc = APP.store.snapshot()
     _, item = _find_resource(doc, project_id, resource_id)
@@ -447,19 +484,50 @@ def resource_open(project_id, resource_id):
     if not exists:
         raise HttpError(404, "路径不存在，可能被移动或删除了")
     try:
-        if path.is_dir():
-            # ShellExecute on a directory can fail inside a packaged/sandboxed
-            # Python (WinError 5). Explorer itself is allowed, and is what
-            # users expect for a project folder anyway.
-            subprocess.Popen(["explorer.exe", str(path)], close_fds=True)
-        else:
-            try:
-                os.startfile(str(path))  # noqa: S606 - 用户明确添加过的本地路径
-            except OSError:
-                subprocess.Popen(["cmd.exe", "/c", "start", "", str(path)], close_fds=True)
+        _open_local_path(path)
     except Exception as exc:  # pragma: no cover
         raise HttpError(500, f"打不开：{exc}")
     return {"ok": True, "name": path.name, "kind": "dir" if path.is_dir() else "file"}
+
+
+def resource_list(project_id, resource_id):
+    """List an attached folder for the in-app folder browser fallback."""
+    root = _resource_dir(project_id, resource_id)
+    try:
+        children = sorted(root.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold()))
+    except OSError as exc:
+        raise HttpError(400, f"读不了文件夹：{exc}")
+    entries = []
+    for child in children[:200]:
+        try:
+            is_dir = child.is_dir()
+            stat = child.stat()
+        except OSError:
+            continue
+        entries.append({
+            "name": child.name,
+            "path": str(child),
+            "kind": "dir" if is_dir else "file",
+            "size": 0 if is_dir else stat.st_size,
+            "mtime": int(stat.st_mtime),
+        })
+    return {
+        "ok": True,
+        "name": root.name,
+        "path": str(root),
+        "entries": entries,
+        "truncated": len(children) > 200,
+    }
+
+
+def resource_open_child(project_id, resource_id, child_path):
+    root = _resource_dir(project_id, resource_id)
+    child = _child_path(root, child_path)
+    try:
+        _open_local_path(child)
+    except Exception as exc:  # pragma: no cover
+        raise HttpError(500, f"打不开：{exc}")
+    return {"ok": True, "name": child.name, "kind": "dir" if child.is_dir() else "file"}
 
 
 TEXT_SUFFIXES = {".md", ".markdown", ".txt", ".tex", ".bib"}
@@ -716,6 +784,14 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/resources/open":
             payload = self._read_body() or {}
             return self._json(resource_open(payload.get("projectId"), payload.get("resourceId")))
+        if path == "/api/resources/list":
+            payload = self._read_body() or {}
+            return self._json(resource_list(payload.get("projectId"), payload.get("resourceId")))
+        if path == "/api/resources/open-child":
+            payload = self._read_body() or {}
+            return self._json(resource_open_child(
+                payload.get("projectId"), payload.get("resourceId"), payload.get("path"),
+            ))
         if path == "/api/resources/read":
             payload = self._read_body() or {}
             return self._json(resource_read(payload.get("projectId"), payload.get("resourceId")))
