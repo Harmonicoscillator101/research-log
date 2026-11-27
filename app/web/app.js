@@ -1232,23 +1232,66 @@
             openExternalResource(id);
             done();
           });
-          root.querySelectorAll('[data-child]').forEach((button) => button.addEventListener('click', async () => {
-            try {
-              const result = await postJson('/api/resources/open-child', {
-                projectId: S.selected,
-                resourceId: id,
-                path: button.dataset.child,
-              });
-              toast(result.kind === 'dir' ? '已打开文件夹' : '已用默认程序打开');
-            } catch (error) {
-              toast('打不开：' + error.message);
-            }
+          root.querySelectorAll('[data-child]').forEach((button) => button.addEventListener('click', () => {
+            openChild(id, button.dataset.child);
           }));
         },
       });
     } catch (error) {
       toast('读不了文件夹：' + error.message);
     }
+  }
+
+  async function openChildExternal(resourceId, childPath) {
+    if (!S.selected) return;
+    try {
+      const result = await postJson('/api/resources/open-child', {
+        projectId: S.selected,
+        resourceId,
+        path: childPath,
+      });
+      toast(result.editor === 'notepad'
+        ? '已用记事本打开，可修改后保存'
+        : (result.kind === 'dir' ? '已打开文件夹' : '已用默认程序打开'));
+    } catch (error) {
+      toast('打不开：' + error.message);
+    }
+  }
+
+  function showChildPreview(resourceId, childPath, data) {
+    const isMarkdown = /\.(md|markdown)$/i.test(data.name || childPath);
+    let body;
+    if (isMarkdown && window.RlogMarkdown) {
+      body = `<div class="reader-body md child-markdown">${window.RlogMarkdown.render(data.text)}</div>`;
+    } else {
+      body = `<pre class="file-preview">${esc(data.text)}</pre>`;
+    }
+    openModal(`
+      <div class="folder-head">
+        <div>
+          <h2>${esc(data.name)}</h2>
+          <p class="folder-path" title="${esc(data.path)}">${esc(data.path)}</p>
+        </div>
+        <button class="icon-btn" type="button" data-close aria-label="关闭">${icon('close')}</button>
+      </div>
+      ${body}
+      <div class="modal-actions">
+        <button class="btn" type="button" data-open-external>用默认程序打开</button>
+        <button class="btn btn-primary" type="button" data-close>关闭</button>
+      </div>`, {
+      onMount(root, done) {
+        root.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', done));
+        root.querySelector('[data-open-external]').addEventListener('click', () => {
+          openChildExternal(resourceId, childPath);
+          done();
+        });
+      },
+    });
+  }
+
+  async function openChild(resourceId, childPath) {
+    // Files are for editing: always hand them to the default application.
+    return openChildExternal(resourceId, childPath);
   }
 
   async function openResource(id) {

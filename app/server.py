@@ -523,14 +523,68 @@ def resource_list(project_id, resource_id):
 def resource_open_child(project_id, resource_id, child_path):
     root = _resource_dir(project_id, resource_id)
     child = _child_path(root, child_path)
+    editor = None
     try:
-        _open_local_path(child)
+        if child.is_file() and child.suffix.lower() in PREVIEW_SUFFIXES:
+            # Text/code files are for editing. Use Notepad by default so a
+            # document app such as WPS cannot hijack the file association.
+            subprocess.Popen(["notepad.exe", str(child)], close_fds=True)
+            editor = "notepad"
+        else:
+            _open_local_path(child)
     except Exception as exc:  # pragma: no cover
         raise HttpError(500, f"打不开：{exc}")
-    return {"ok": True, "name": child.name, "kind": "dir" if child.is_dir() else "file"}
+    return {
+        "ok": True,
+        "name": child.name,
+        "kind": "dir" if child.is_dir() else "file",
+        "editor": editor,
+    }
 
 
 TEXT_SUFFIXES = {".md", ".markdown", ".txt", ".tex", ".bib"}
+
+PREVIEW_SUFFIXES = TEXT_SUFFIXES | {
+    ".py", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".json",
+    ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".csv",
+    ".sh", ".ps1", ".bat", ".c", ".h", ".cc", ".cpp", ".hpp",
+    ".java", ".rs", ".go", ".rb", ".php", ".sql", ".html", ".css",
+    ".xml", ".log", ".rst",
+}
+
+
+def resource_read_child(project_id, resource_id, child_path):
+    """Read a text/code file inside an attached folder for in-app preview."""
+    root = _resource_dir(project_id, resource_id)
+    child = _child_path(root, child_path)
+    if not child.is_file():
+        raise HttpError(400, "这个条目不是文件，无法预览")
+    if child.suffix.lower() not in PREVIEW_SUFFIXES:
+        raise HttpError(400, "这个文件类型不支持内嵌预览")
+    try:
+        size = child.stat().st_size
+    except OSError:
+        raise HttpError(404, "文件不存在，可能被移动或删除了")
+    if size > 4 * 1024 * 1024:
+        raise HttpError(413, "文件超过 4 MB，暂不支持预览")
+    raw = child.read_bytes()
+    text = None
+    for encoding in ("utf-8-sig", "utf-8", "gb18030"):
+        try:
+            text = raw.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    if text is None:
+        raise HttpError(400, "无法识别文件编码")
+    return {
+        "ok": True,
+        "name": child.name,
+        "path": str(child),
+        "text": text,
+        "mtime": int(child.stat().st_mtime),
+        "size": size,
+    }
 
 
 def resource_read(project_id, resource_id):
@@ -790,6 +844,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/resources/open-child":
             payload = self._read_body() or {}
             return self._json(resource_open_child(
+                payload.get("projectId"), payload.get("resourceId"), payload.get("path"),
+            ))
+        if path == "/api/resources/read-child":
+            payload = self._read_body() or {}
+            return self._json(resource_read_child(
                 payload.get("projectId"), payload.get("resourceId"), payload.get("path"),
             ))
         if path == "/api/resources/read":
