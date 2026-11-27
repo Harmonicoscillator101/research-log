@@ -231,6 +231,18 @@ class Store:
             self._notify({"rev": self.rev, "external": False})
             return saved
 
+    def delete_project(self, project_id: str) -> dict | None:
+        """Atomically delete one project, so a stale full-document save cannot resurrect it."""
+        with self.lock:
+            doc = normalize(read_json(self.path))
+            before = len(doc["projects"])
+            doc["projects"] = [p for p in doc["projects"] if p.get("id") != project_id]
+            if len(doc["projects"]) == before:
+                return None
+            saved = self._commit(doc)
+            self._notify({"rev": self.rev, "external": False})
+            return saved
+
     def replace(self, doc: dict) -> dict:
         with self.lock:
             saved = self._commit(doc)
@@ -626,6 +638,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         route({"POST"}, self, self._post)
 
+    def do_DELETE(self):
+        route({"DELETE"}, self, self._delete)
+
     def _touch(self):
         APP.last_activity = time.time()
         APP.bye_at = None
@@ -666,6 +681,19 @@ class Handler(BaseHTTPRequestHandler):
             if saved is None:
                 rev, current = APP.store.snapshot()
                 return self._json({"ok": False, "error": "conflict", "rev": rev, "data": current}, 409)
+            return self._json({"ok": True, "rev": saved["rev"]})
+        raise HttpError(404, "未知接口")
+
+    def _delete(self, path, query):
+        self._touch()
+        prefix = "/api/projects/"
+        if path.startswith(prefix):
+            project_id = urllib.parse.unquote(path[len(prefix):].strip("/"))
+            if not project_id:
+                raise HttpError(400, "缺少项目")
+            saved = APP.store.delete_project(project_id)
+            if saved is None:
+                raise HttpError(404, "项目不存在")
             return self._json({"ok": True, "rev": saved["rev"]})
         raise HttpError(404, "未知接口")
 

@@ -709,6 +709,8 @@ button { cursor: pointer; }
 .detail-title:focus { background: var(--surface); box-shadow: 0 0 0 1px var(--border), 0 0 0 4px var(--accent-soft); }
 .detail-title:empty::before { content: "未命名项目"; color: var(--text-3); }
 
+.detail-delete { margin-left: auto; }
+
 .detail-meta {
   display: flex;
   flex-wrap: wrap;

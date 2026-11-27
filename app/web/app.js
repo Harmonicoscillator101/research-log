@@ -361,6 +361,8 @@
     if (!S.undo.length) { toast('没有可以撤销的操作'); return; }
     const state = JSON.parse(S.undo.pop());
     S.doc = state;
+    // Keep the full-document undo compatible with the current server revision.
+    S.doc.rev = S.rev;
     if (S.selected && !getProject(S.selected)) S.selected = null;
     touch();
     render();
@@ -853,6 +855,7 @@
             <span class="pill date">${icon('target')}<span class="pill-label">目标</span>
               ${dateControl('targetDate', project.targetDate)}
             </span>
+            <button class="btn btn-sm btn-danger detail-delete" type="button" data-act="delete-project" title="删除项目">${icon('trash')}删除项目</button>
           </div>
 
           <section class="goal-panel">
@@ -994,23 +997,30 @@
     render();
   }
 
-  function deleteProject(id) {
+  async function deleteProject(id) {
     const project = getProject(id);
     if (!project) return;
-    confirmDialog({
+    const ok = await confirmDialog({
       title: '删除这个项目？',
       body: `「${project.title || '未命名项目'}」和它的小目标、进展记录都会被删除。删除后可以用 Ctrl+Z 撤销。`,
       okLabel: '删除',
       danger: true,
-    }).then((ok) => {
-      if (!ok) return;
-      edit((doc) => {
-        doc.projects = doc.projects.filter((p) => p.id !== id);
-      }, { render: false });
+    });
+    if (!ok) return;
+    snapshot();
+    try {
+      const res = await fetch(`/api/projects/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || '服务端拒绝删除');
+      S.doc.projects = S.doc.projects.filter((p) => p.id !== id);
+      S.rev = json.rev;
+      S.doc.rev = json.rev;
       S.selected = null;
       render();
       toast('项目已删除', '撤销', undo);
-    });
+    } catch (error) {
+      toast('删除失败：' + error.message);
+    }
   }
 
   function setStatus(id, status) {
