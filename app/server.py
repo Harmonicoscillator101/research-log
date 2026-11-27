@@ -447,10 +447,19 @@ def resource_open(project_id, resource_id):
     if not exists:
         raise HttpError(404, "路径不存在，可能被移动或删除了")
     try:
-        os.startfile(str(path))  # noqa: S606 - 用户明确添加过的本地路径
+        if path.is_dir():
+            # ShellExecute on a directory can fail inside a packaged/sandboxed
+            # Python (WinError 5). Explorer itself is allowed, and is what
+            # users expect for a project folder anyway.
+            subprocess.Popen(["explorer.exe", str(path)], close_fds=True)
+        else:
+            try:
+                os.startfile(str(path))  # noqa: S606 - 用户明确添加过的本地路径
+            except OSError:
+                subprocess.Popen(["cmd.exe", "/c", "start", "", str(path)], close_fds=True)
     except Exception as exc:  # pragma: no cover
         raise HttpError(500, f"打不开：{exc}")
-    return {"ok": True}
+    return {"ok": True, "name": path.name, "kind": "dir" if path.is_dir() else "file"}
 
 
 TEXT_SUFFIXES = {".md", ".markdown", ".txt", ".tex", ".bib"}

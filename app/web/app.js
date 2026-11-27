@@ -1183,7 +1183,8 @@
   async function openResource(id) {
     if (!S.selected) return;
     try {
-      await postJson('/api/resources/open', { projectId: S.selected, resourceId: id });
+      const result = await postJson('/api/resources/open', { projectId: S.selected, resourceId: id });
+      toast(result.kind === 'dir' ? '已打开文件夹' : '已用默认程序打开');
     } catch (error) {
       toast('打不开：' + error.message);
     }
