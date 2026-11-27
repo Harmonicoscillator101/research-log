@@ -12,6 +12,20 @@ All notable changes to this project are documented here. The format follows [Kee
 - MCP Resources / Prompts (weekly review, project summary);
 - cross-project paper library.
 
+## [0.1.1] - 2026-11-27
+
+### Fixed
+
+- Project deletion is atomic and available from the project detail header; undo still restores the project.
+- Project folders open in a dedicated Explorer window instead of being merged into an existing window;
+  the UI also offers an in-app folder browser as a fallback.
+- Text and code files open in Notepad for editing instead of being intercepted by a document app.
+
+### Changed
+
+- Windows package should be extracted to a normal Medium-integrity directory; do not run it from a
+  workspace that has inherited a Low mandatory integrity label.
+
 ## [0.1.0] - 2026-11-24
 
 First open-source release.

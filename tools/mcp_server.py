@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import rlog  # noqa: E402
 
 SERVER_NAME = "research-log"
-SERVER_VERSION = "0.1.0"
+SERVER_VERSION = "0.1.1"
 SUPPORTED_PROTOCOLS = ("2025-06-18", "2025-03-26", "2024-11-05")
 DEFAULT_PROTOCOL = "2025-06-18"
 

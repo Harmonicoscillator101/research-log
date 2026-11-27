@@ -9,8 +9,8 @@ authors:
   - family-names: "Wang"
     given-names: "Ziyue"
     affiliation: "School of Physics, Huazhong University of Science and Technology"
-version: 0.1.0
-date-released: 2026-11-24
+version: 0.1.1
+date-released: 2026-11-27
 license: MIT
 repository-code: "https://github.com/Harmonicoscillator101/research-log"
 keywords:

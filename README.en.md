@@ -160,7 +160,7 @@ rlog.cmd where
 
 > **Unsigned build warning**: `科研日志.exe` and `添加资料.exe` are not code-signed. Windows SmartScreen / Defender may show “Windows protected your PC” or “Unknown publisher”. This is a common warning for unsigned builds and does not mean malware was detected. Choose **More info → Run anyway**, verify the SHA-256 checksum published on the Release page, or run from source with `run.cmd`. Do not disable Windows Defender just to run the app.
 >
-> Verify with: `Get-FileHash .\ResearchLog-0.1.0-win64.zip -Algorithm SHA256`
+> Verify with: `Get-FileHash .\ResearchLog-0.1.1-win64.zip -Algorithm SHA256`
 
 ### Option 2: Run from source
 
